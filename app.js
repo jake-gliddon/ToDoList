@@ -4,20 +4,23 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-//call EJS
+//call EJS BP and public ststic path
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
+
+// let Variables
+let today = new Date();
+let currentday = today.getDay();
+let date = today.getDate();
+let month = today.getMonth();
+let year = today.getFullYear();
+let day = "";
+let currentMonth = ""
 let items = [];
-//GET Route Function
-app.get('/', function(req, res){
-    let today = new Date();
-    let currentday = today.getDay();
-    let date = today.getDate();
-    let month = today.getMonth();
-    let year = today.getFullYear();
-    let day = "";
-    let currentMonth = ""
+
+// switch function for app get methods
+function createDay(currentday) {
     switch (currentday) {
         case 0:
             day = "Sunday"
@@ -44,7 +47,9 @@ app.get('/', function(req, res){
                 console.log('error!!')
                 break;
             };
-        switch (month) {
+};
+function createMonth(month) {
+    switch (month) {
         case 0:
             currentMonth = "January"
             break;
@@ -85,6 +90,12 @@ app.get('/', function(req, res){
                 console.log('error!!')
                 break;
             };
+};
+
+//GET Route Functions
+app.get('/', function(req, res){
+    createDay(currentday);
+    createMonth(month);
     res.render('index', {
         kindOfDay: day,
         dateOfTheWeek: date,
@@ -93,7 +104,19 @@ app.get('/', function(req, res){
         newListItems: items,
     });
 });
-//Post route
+
+app.get('/about', function(req, res){
+    createDay(currentday);
+    createMonth(month);
+    res.render('about', {
+        kindOfDay: day,
+        dateOfTheWeek: date,
+        monthOfTheYear: currentMonth,
+        currentYear: year,
+    });
+});
+
+//Post routes
 app.post('/', function(req, res){
     let item = req.body.newItem
     items.push(item);
